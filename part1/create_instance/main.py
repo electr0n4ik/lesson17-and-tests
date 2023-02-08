@@ -5,6 +5,8 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from marshmallow import fields, Schema
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -22,15 +24,20 @@ class Role(db.Model):
 db.create_all()
 
 
-class RoleSchema:
-    # TODO напишите схему здесь
-    pass
+class RoleSchema(Schema):
+    id = fields.Int()
+    name = fields.Str()
 
 
 def create(data):
-    # TODO напишите функцию здесь
-    pass
+
+    book_schema = RoleSchema()
+    user_dict = book_schema.load(data)
+    user = Role(**user_dict)
+    with db.session.begin():
+        db.session.add(user)
 
 
 if __name__ == "__main__":
     create({"id": 1, "name": "user"})
+
